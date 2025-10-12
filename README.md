@@ -1,6 +1,6 @@
 # 2D Platform Video Game
 
-A 2D platformer developed in Unity
+A 2D platformer developed in Unity. Developed in Unity. OSU CS461-463 Senior Capstone Project.
 
 **Team Members:**  
 Sam Neale – neales@oregonstate.edu  
