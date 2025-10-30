@@ -8,6 +8,7 @@ public class BasicPlayerController : MonoBehaviour
     public GameObject cameraTarget;
     public float movementIntensity;
     public float jumpVelocity;
+    public bool can_win = false;
 
     void Start()
     {
@@ -43,6 +44,13 @@ public class BasicPlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             rb.AddForce(-RightDirection * movementIntensity * Time.deltaTime);
+        }
+    }
+    public void pickupkey()
+    {
+        if (!can_win)
+        {
+            can_win = true;
         }
     }
 }
