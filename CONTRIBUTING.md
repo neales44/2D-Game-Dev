@@ -4,31 +4,73 @@ How to set up, code, test, review, and release so contributions meet our Definit
 
 ## Code of Conduct
 
-Reference the project/community behavior expectations and reporting process.
+We will first discuss risks/conflicts with the 1-2 team members it involves, then if the conflict is unresolved, discuss it with the entire team. Most conflicts should be resolved by this point. if we are still unable to resolve the issue, we escalate to Alex Ulbrich (Project Partner) with commit history, communication logs, on top of what we have agreed to work on as a team as evidence.
 
 ## Getting Started
 
-List prerequisites, setup steps, environment variables/secrets handling, and how to run the app locally.
+Prerequisites:
+Unity Editor (latest Ver.) with student license
+Git
+
+Optional code editors:
+Visual Studio Code
+Visual Studio 2022
+or others
+
+Setup:
+https://unity.com/download
+
+Running app locally:
+- Open project in Unity Editor
+- Run project through in engine "Play" button/command
+
+Release builds will be compiled to an executable file
 
 ## Branching & Workflow
 
-Describe the workflow (e.g., trunk-based or GitFlow), default branch, branch naming, and when to rebase vs. merge.
+Default Branch: 
+Main
+
+Testing branches:
+ /Main/test-[testname]
+
+New Feature:
+/feature/[featurename] 
+
+Merging to main:
+Pushing to main should only be done after atleast 1 peer review
 
 ## Issues & Planning
 
 Explain how to file issues, required templates/labels, estimation, and triage/assignment practices.
 
+Issues/bug reports should be added to:
+https://github.com/neales44/2D-Game-Dev/issues
+
+New Features should added to the Project Plan Board:
+https://github.com/users/neales44/projects/3
+
+
 ## Commit Messages
 
-State the convention (e.g., Conventional Commits), include examples, and how to reference issues.
+All commits should include context of the update.
+
+i.e. Hitbox Update
 
 ## Code Style, Linting & Formatting
 
-Name the formatter/linter, config file locations, and the exact commands to check/fix locally.
+(Unity Project) Currently no Linting method implimented.
 
 ## Testing
 
 Define required test types, how to run tests, expected coverage thresholds, and when new/updated tests are mandatory.
+
+Testing should be done through Unity Editor by using Unity Play button/command.
+
+Tests should check for:
+Fully funciton/runnable project
+Check that previous functionality still works
+Check new feature being added
 
 ## Pull Requests & Reviews
 
