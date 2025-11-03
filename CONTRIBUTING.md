@@ -4,6 +4,10 @@ How to set up, code, test, review, and release so contributions meet our Definit
 
 ## Code of Conduct
 
+- Team members must be respectful to one another.
+- Team members must speak in a professional objective manner.
+
+Conflict resolution:
 We will first discuss risks/conflicts with the 1-2 team members it involves, then if the conflict is unresolved, discuss it with the entire team. Most conflicts should be resolved by this point. if we are still unable to resolve the issue, we escalate to Alex Ulbrich (Project Partner) with commit history, communication logs, on top of what we have agreed to work on as a team as evidence.
 
 ## Getting Started
