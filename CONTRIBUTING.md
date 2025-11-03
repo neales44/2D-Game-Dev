@@ -76,22 +76,46 @@ Check new feature being added
 
 Outline PR requirements (template, checklist, size limits), reviewer expectations, approval rules, and required status checks.
 
+Review Guidelines:
+- Atleast 1 team member must review merges to main
+- Review must be done by running feature/build in Unity editor
+
 ## CI/CD
 
-Link to pipeline definitions, list mandatory jobs, how to view logs/re-run jobs, and what must pass before merge/release.
+(Link to pipeline definitions, list mandatory jobs, how to view logs/re-run jobs, and what must pass before merge/release.)
 
 ## Security & Secrets
 
-State how to report vulnerabilities, prohibited patterns (hard-coded secrets), dependency update policy, and scanning tools.
+Github should be set to private
+
+Do not commit API keys to GitHub
+Reporting vulnerabilities:
+Discuss with team members or project partner via email, discord message
 
 ## Documentation Expectations
 
-Specify what must be updated (README, docs/, API refs, CHANGELOG) and docstring/comment standards.
+If any 3rd party code/assets are used, specific references must be made in README file as well as stating copyright status.
+
+update CHANGELOG.md for end user changes
+
 
 ## Release Process
 
-Describe versioning scheme, tagging, changelog generation, packaging/publishing steps, and rollback process.
+Releases must be labeled in the following versioning scheme:
+v.1.1.0
+
+CHANGELOG.md must be updated before release
 
 ## Support & Contact
 
 Provide maintainer contact channel, expected response windows, and where to ask questions.
+
+Maintainers:
+Roxlynn Beecher - beecheco@oregonstate.edu
+Austin Christian - chrisaus@oregonstate.edu
+Ethan Ferrante - ferrante@oregonstate.edu
+Michael Hand - handm@oregonstate.edu
+Samuel Neale - neales@oregonstate.edu
+
+Contact Channels:
+Email or Discord(#game-dev)
