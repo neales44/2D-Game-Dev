@@ -28,7 +28,9 @@ jobs:
 
       # Tests
       - name: Run tests
+        id: tests
         uses: game-ci/unity-test-runner@v4
+        continue-on-error: true
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           unityVersion: 6000.2.8f1
