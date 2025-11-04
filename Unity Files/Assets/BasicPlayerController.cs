@@ -11,14 +11,27 @@ public class BasicPlayerController : MonoBehaviour
     public float movementIntensity;
     public float jumpVelocity;
 
-    // ground collision
+    // ground collision + jumping
     public int jumpTotal;
-    public int jumpCount;
+    private int jumpCount;
     public float groundCheckDist;
     public float rayWidth = 0.5f;
     public LayerMask groundLayer;
-    public bool onGround = false;
-    public bool alreadyJumped = false;
+    private bool onGround = false;
+    private bool spaceLocked = false;
+    private bool alreadyJumped = false;
+    
+    // this is to make jumps distinct, basically only rechecking to reset jumps
+    // once the player has fully left the ground or this pity timer has expired
+    public float pityTimer = 0.2f;
+    private float pityTimerStore = 0.0f;
+    
+    // this is how long the player has to hold space for max height
+    // otherwise, letting go applies a little downward force
+    public float jumpTimer = 0.4f;
+    private float jumpTimerStore = 0.0f;
+    public float downForce = 0.1f;
+    private float downTimer = 0.0f;
 
     // pickup values (items, etc)
     public bool can_win = false;
@@ -52,11 +65,10 @@ public class BasicPlayerController : MonoBehaviour
         // if any of the rays hit, set onGround to true
         if (center_hit.collider != null || left_hit.collider != null || right_hit.collider != null)
         {
-            //Debug.Log(center_hit.collider);
-            //Debug.Log(left_hit.collider); 
-            //Debug.Log(right_hit.collider);
             onGround = true;
-            jumpCount = jumpTotal; // resets jumps every time ground is touched
+            if (!alreadyJumped) {
+                jumpCount = jumpTotal; // resets jumps every time ground is touched
+            }
         }
 
         // purely for visual debugging, the visual lines represent the raycast checks
@@ -67,8 +79,8 @@ public class BasicPlayerController : MonoBehaviour
         // Move Up
         if (Input.GetKey(KeyCode.Space))
         {
-            // alreadyJumped prevents holding the space bar causing all jumps to be used rapidly
-            if (jumpCount > 0 && alreadyJumped == false)
+            // spaceLocked prevents holding the space bar causing all jumps to be used rapidly
+            if (jumpCount > 0 && !spaceLocked)
             {
                 var curr_vel = rb.linearVelocity;
                 if (curr_vel.y < 0)
@@ -77,15 +89,47 @@ public class BasicPlayerController : MonoBehaviour
                 }
                 // removed Time.deltaTime, as this is a set velocity jump, not consistent movement
                 rb.linearVelocity = curr_vel + (UpDirection * jumpVelocity);
+                spaceLocked = true;
                 alreadyJumped = true;
+                jumpTimerStore = 0;
+                pityTimerStore = 0;
                 jumpCount--;
+            }
+
+            if (spaceLocked) {
+                jumpTimerStore += Time.deltaTime;
+            }
+            
+        }
+
+        // prevent jump storage when getting into the air
+        if (alreadyJumped) {
+            // if timer expires, set false
+            alreadyJumped = pityTimerIncrement();
+            // if timer still hasn't expired, check ground
+            // if off ground, set false
+            if (alreadyJumped) {
+                alreadyJumped = onGround;
             }
         }
 
         // Checking for letting go of Space
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            alreadyJumped = false;
+            downTimer = jumpTimer - jumpTimerStore;
+            spaceLocked = false;
+        }
+
+        // adding downward force on letting go of space
+        // only applies if traveling upwards
+        if (downTimer > 0) {
+            if (rb.linearVelocity.y > 0) {
+                downTimer -= Time.deltaTime;
+                var downVec = new Vector3(0, -(downForce * Time.deltaTime), 0);
+                rb.linearVelocity = rb.linearVelocity - downVec;
+            } else {
+                downTimer = 0;
+            }
         }
 
         // Move Down
@@ -104,6 +148,16 @@ public class BasicPlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             rb.AddForce(-RightDirection * movementIntensity * Time.deltaTime);
+        }
+    }
+
+    private bool pityTimerIncrement()
+    {
+        pityTimerStore += Time.deltaTime;
+        if (pityTimerStore <= pityTimer) {
+            return true;
+        } else {
+            return false;
         }
     }
 
