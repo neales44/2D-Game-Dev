@@ -20,26 +20,31 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-
-      # Test
-      - name: Run tests
-        uses: game-ci/unity-test-runner@v4
+      
+      - name: Debugging env (will remove later)
+        run: |
+          echo "UNITY_LICENSE length: ${#UNITY_LICENSE}"
+        shell: bash
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v4
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           unityVersion: 6000.2.8f1
           projectPath: "Unity Files"
-
-      # Build
-      - name: Build project
-        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      
+      - name: Build project
+        uses: game-ci/unity-builder@v4
         with:
-          targetPlatform: WebGL
           unityVersion: 6000.2.8f1
+          targetPlatform: WebGL
           projectPath: "Unity Files"
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       # Output
       - uses: actions/upload-artifact@v4
