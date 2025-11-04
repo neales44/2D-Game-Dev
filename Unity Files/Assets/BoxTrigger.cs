@@ -5,11 +5,21 @@ using UnityEngine;
 public class hit : MonoBehaviour
 {
 
-    public GameObject boxText;
+    public SpriteRenderer spriteText;
+
+    private void Start()
+    {
+        spriteText.enabled = false;
+    }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        boxText.SetActive(true);
-        Debug.Log("GameObject collided with " + collision.name);
+        spriteText.enabled = true;
+        Debug.Log("Player collided with " + collision.name);
+    }
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        spriteText.enabled = false;
+        Debug.Log("Player left the collision with " + collision.name);
     }
 }
