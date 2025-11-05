@@ -320,14 +320,14 @@ MonoBehaviour:
   movementIntensity: 70
   jumpVelocity: 0.67
   jumpTotal: 1
-  jumpCount: 0
   groundCheckDist: 0.67
   rayWidth: 0.45
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
-  onGround: 0
-  alreadyJumped: 0
+  pityTimer: 0.2
+  jumpTimer: 0.65
+  downForce: 12
   can_win: 0
 --- !u!61 &202558632
 BoxCollider2D:
