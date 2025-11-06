@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering.UI;
 public class BasicPlayerController : MonoBehaviour
 {
-
+    public LogicScript Logic;
     // general movement
     private Rigidbody2D rb;
     public GameObject cameraTarget;
@@ -52,6 +52,11 @@ public class BasicPlayerController : MonoBehaviour
 
     void Update()
     {
+
+        // Disable movement if game is paused
+        if (Logic.Paused == true){
+            return;
+        }
 
         // movement direction vectors
         var UpDirection = new Vector2(0, 10);
