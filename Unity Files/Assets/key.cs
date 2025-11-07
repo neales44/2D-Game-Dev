@@ -1,7 +1,9 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class key : MonoBehaviour
 {
+    public GameObject InventoryKey;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -19,6 +21,7 @@ public class key : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             collision.GetComponent<BasicPlayerController>().pickupkey();
+            InventoryKey.SetActive(true);
             Destroy(gameObject);
         }
     }

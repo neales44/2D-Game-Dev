@@ -4,6 +4,7 @@ public class win_block : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public LogicScript Logic;
+    public GameObject key;
     void Start()
     {
         
@@ -20,6 +21,8 @@ public class win_block : MonoBehaviour
         if (collision.gameObject.GetComponent<BasicPlayerController>().can_win){
             Destroy(gameObject);
             Logic.TempMessage("Door Unlocked!", 2f);
+            key.SetActive(false);
+
         }
         else
         {
