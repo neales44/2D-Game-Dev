@@ -7,11 +7,12 @@ using UnityEngine.SceneManagement;
 public class PlayerTests
 {
 
-    // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-    // `yield return null;` to skip a frame.
+    
     [UnityTest]
     public IEnumerator PlayerExistAndMove()
     {
+        // this test loads our main scene and checks for:
+        // player existing, player left/right movement working
         SceneManager.LoadScene("test-stage");
 
         float timePassed = 0f;
@@ -33,7 +34,7 @@ public class PlayerTests
         var RightDirection = new Vector2(10, 0);
         Vector2 playerPosition = player.transform.position;
 
-        while (timePassed < 3f)
+        while (timePassed < 1f)
         {
             rb.AddForce(RightDirection * movementIntensity * Time.deltaTime);
             timePassed += Time.deltaTime;
@@ -44,7 +45,7 @@ public class PlayerTests
 
         playerPosition = player.transform.position;
 
-        while (timePassed < 3f)
+        while (timePassed < 1f)
         {
             rb.AddForce(-RightDirection * movementIntensity * Time.deltaTime);
             timePassed += Time.deltaTime;

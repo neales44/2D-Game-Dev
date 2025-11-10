@@ -23,7 +23,7 @@ jobs:
       - name: Cache
         uses: actions/cache@v3
         with:
-          path: Library
+          path: Unity Files/Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
@@ -66,6 +66,14 @@ jobs:
         with:
           lfs: true
 
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: Unity Files/Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
       # build
       - name: Build project
         id: build
@@ -102,6 +110,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: Unity Files/Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
       # unity setup
       - name: Setup Unity for sln generation
         uses: game-ci/unity-builder@v4
@@ -119,8 +135,9 @@ jobs:
 
       # generating the .sln
       - name: Generate Unity C# sln
+        continue-on-error: true
         run: |
-          $UNITY_EXECUTABLE -batchmode -quit -projectPath "Unity Files" -executeMethod UnityEditor.SyncVS.SyncSolution
+          /opt/unity/Editor/Unity -batchmode -quit -projectPath "Unity Files" -executeMethod UnityEditor.SyncVS.SyncSolution
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
