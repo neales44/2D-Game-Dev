@@ -26,8 +26,8 @@ jobs:
           restore-keys: |
             Library-
 
-      - name: make sln
-        run: dotnet format --verify-no-changes --verbosity diagnostic
+      - name: sln
+        run: dotnet format ".\Unity Files\UnityFiles.sln" --verify-no-changes --verbosity diagnostic
 
       # Tests
       - name: Run tests
