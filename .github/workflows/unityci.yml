@@ -211,6 +211,9 @@ jobs:
       - name: Add dotnet tools to PATH
         run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
+      - name: List files to double check
+        run: ls -R "Unity Files"
+
       - name: Run dotnet-format linter
         run: |
-          dotnet-format --check Unity\ Files/*.sln
+          dotnet-format --check "Unity Files/Unity Files.sln"
