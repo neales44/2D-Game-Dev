@@ -38,6 +38,7 @@ jobs:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           unityVersion: 6000.2.8f1
           projectPath: "Unity Files"
+          customImage: unityci/editor:ubuntu-6000.2.8f1-mono-3
           testMode: PlayMode
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
@@ -122,4 +123,4 @@ jobs:
 
       - name: Run dotnet-format linter
         run: |
-          dotnet-format "Unity Files/Unity Files.sln" --verify-no-changes --folder ./Assets
+          dotnet-format "Unity Files/Unity Files.sln" --check -f ./Assets
