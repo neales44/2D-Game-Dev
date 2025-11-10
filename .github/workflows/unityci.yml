@@ -103,6 +103,15 @@ jobs:
         uses: game-ci/unity-builder@v4
         with:
           unityVersion: 6000.2.8f1
+          targetPlatform: StandaloneWindows64
+          projectPath: "Unity Files"
+          allowDirtyBuild: true
+          customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL}}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          TMPDIR: /tmp
 
       - name: Install dotnet-format
         run: dotnet tool install --global dotnet-format
