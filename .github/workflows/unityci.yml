@@ -97,11 +97,13 @@ jobs:
     name: Lint C# Code
     runs-on: ubuntu-22.04
     steps:
+
       # checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Unity & generate sln
+      # unity setup
+      - name: Setup Unity for sln generation
         uses: game-ci/unity-builder@v4
         with:
           unityVersion: 6000.2.8f1
@@ -114,6 +116,15 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL}}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           TMPDIR: /tmp
+
+      # generating the .sln
+      - name: Generate Unity C# sln
+        run: |
+          $UNITY_EXECUTABLE -batchmode -quit -projectPath "Unity Files" -executeMethod UnityEditor.SyncVS.SyncSolution
+        env:
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
       - name: Install dotnet-format
         run: dotnet tool install --global dotnet-format
