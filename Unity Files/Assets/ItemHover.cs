@@ -20,14 +20,14 @@ public class ItemHover : MonoBehaviour
     {
         itemPosition = transform.position;
         halfAnimDur = animDur / 2.0f;
-        offset = Random.Range(0, animDur); 
+        offset = Random.Range(0, animDur);
     }
 
     void Update()
     {
 
-        curTime = (Time.time+offset) % animDur;
-        curTimeHalf = (Time.time + offset) % halfAnimDur; 
+        curTime = (Time.time + offset) % animDur;
+        curTimeHalf = (Time.time + offset) % halfAnimDur;
         curTimePercent = (curTimeHalf % halfAnimDur) / halfAnimDur;
 
 
@@ -38,9 +38,10 @@ public class ItemHover : MonoBehaviour
         if (curTime < halfAnimDur) // moving up
         {
             transform.position = new Vector3(itemPosition.x, itemPosition.y - (animDist / 2) + animDist * curY, itemPosition.z);
-        }else // moving down
+        }
+        else // moving down
         {
-            transform.position = new Vector3(itemPosition.x, itemPosition.y - (animDist/2) + animDist - animDist * curY, itemPosition.z);
+            transform.position = new Vector3(itemPosition.x, itemPosition.y - (animDist / 2) + animDist - animDist * curY, itemPosition.z);
         }
 
 
