@@ -185,17 +185,18 @@ jobs:
 
       # trying using Unity directly in docker
       - name: Generate .sln and .csproj files
+        continue-on-error: true
         uses: docker://unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
         with:
           args: >
             /bin/bash -c "
-            /opt/unity/Editor/Unity -batchmode -nographics -quit
-              -logfile /dev/stdout
-              -projectPath 'Unity Files'
-              -generateProjectFiles;
-            /opt/unity/Editor/Unity -batchmode -nographics -quit
-              -logfile /dev/stdout
-              -projectPath 'Unity Files'
+            /opt/unity/Editor/Unity -batchmode -nographics -quit \
+              -logfile /dev/stdout \
+              -projectPath 'Unity Files' \
+              -generateProjectFiles; \
+            /opt/unity/Editor/Unity -batchmode -nographics -quit \
+              -logfile /dev/stdout \
+              -projectPath 'Unity Files' \
               -executeMethod UnityEditor.SyncVS.SyncSolution
             "
         env:
