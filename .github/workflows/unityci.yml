@@ -152,6 +152,8 @@ jobs:
     name: Lint C# Code
     runs-on: ubuntu-22.04
     needs: cache
+    permissions:
+      contents: write # to commit the linting changes
     steps:
 
       # checkout
@@ -194,48 +196,17 @@ jobs:
 
       - name: Run dotnet-format linter
         run: |
-          dotnet-format --check "Unity Files/Unity Files.sln"
-  
-  lint-windows:
-    name: Lint C# Code (Windows ver.)
-    runs-on: windows-latest
-    needs: cache
-    steps:
+          dotnet-format "Unity Files/Unity Files.sln"
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
+      - name: Configure git for commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Restore Unity Library cache
-        uses: actions/cache@v3
-        with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      - name: Generate SLN
-        uses: game-ci/unity-builder@v4
-        with:
-          unityVersion: 6000.2.8f1
-          projectPath: "Unity Files"
-          targetPlatform: StandaloneWindows64
-          customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
-          buildMethod: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
+      - name: Commit formatted code
+        run: |
+          git add .
+          git commit -m "Apply dotnet-format fixes" || echo "No changes to commit"
+          git push
         env:
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-
-      - name: Install dotnet-format
-        run: dotnet tool install --global dotnet-format
-
-      - name: Add dotnet tools to PATH
-        run: echo "$Env:USERPROFILE\\.dotnet\\tools" >> $Env:GITHUB_PATH
-
-      - name: List files
-        run: dir "Unity Files"
-
-      - name: Run dotnet-format
-        run: dotnet-format --check "Unity Files/Unity Files.sln"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
