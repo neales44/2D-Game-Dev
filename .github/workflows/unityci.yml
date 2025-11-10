@@ -190,13 +190,13 @@ jobs:
           args: >
             /bin/bash -c "
             /opt/unity/Editor/Unity -batchmode -nographics -quit
-            -logfile /dev/stdout
-            -projectPath 'Unity Files'
-            -executeMethod UnityEditor.EditorPrefs.SetString 'kScriptsDefaultApp' 'code';
+              -logfile /dev/stdout
+              -projectPath 'Unity Files'
+              -generateProjectFiles;
             /opt/unity/Editor/Unity -batchmode -nographics -quit
-            -logfile /dev/stdout
-            -projectPath 'Unity Files'
-            -executeMethod UnityEditor.SyncVS.SyncSolution
+              -logfile /dev/stdout
+              -projectPath 'Unity Files'
+              -executeMethod UnityEditor.SyncVS.SyncSolution
             "
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
@@ -212,4 +212,4 @@ jobs:
 
       - name: Run dotnet-format linter
         run: |
-          dotnet-format --check "Unity Files/*.sln"
+          dotnet-format --check Unity\ Files/*.sln
