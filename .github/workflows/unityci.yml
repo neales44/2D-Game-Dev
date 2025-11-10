@@ -26,6 +26,9 @@ jobs:
           restore-keys: |
             Library-
 
+      - name: make sln
+        run: dotnet format --verify-no-changes --verbosity diagnostic
+
       # Tests
       - name: Run tests
         id: tests
