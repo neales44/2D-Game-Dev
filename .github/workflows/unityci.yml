@@ -36,6 +36,10 @@ jobs:
           else
             echo "No cache - rebuilding Library"
           fi
+
+      - name: Clearing space on Docker
+        run: |
+          docker system prune -af --volumes
       
       - name: Setup Unity Library folder
         if: steps.unity-cache.outputs.cache-hit != 'true'
@@ -73,7 +77,8 @@ jobs:
           key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
           restore-keys: |
             Library-
-      # Quality
+            
+      # quality
       - name: Install .net
         run: dotnet tool install -g dotnet-format
 
@@ -95,13 +100,9 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           TMPDIR: /tmp
 
-      # help with memory / segfault issues
-      # - name: Clean up docker space
-      #   run: |
-      #     echo "Removing unused docker images and containers..."
-      #     docker system prune -af
-      #   env:
-      #     TMPDIR: /tmp
+      - name: Clearing space on Docker
+        run: |
+          docker system prune -af --volumes
 
   build:
     name: Build Unity Project
@@ -149,6 +150,10 @@ jobs:
         with:
           name: Build
           path: build
+
+      - name: Clearing space on Docker
+        run: |
+          docker system prune -af --volumes
 
   # linter
   lint:
@@ -213,3 +218,7 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clearing space on Docker
+        run: |
+          docker system prune -af --volumes
