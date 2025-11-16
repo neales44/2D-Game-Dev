@@ -22,51 +22,6 @@ permissions:
 
 jobs:
 
-  # setup and use from https://github.com/docker/build-push-action/issues/225
-  # setup:
-  #   name: Docker Setup
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v5
-        
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-
-  #     # this was taken from https://github.com/marketplace/actions/free-disk-space-ubuntu, which
-  #     # was found from https://game.ci/docs/troubleshooting/common-issues/#no-space-left-on-device
-  #     - name: Free Disk Space (Ubuntu)
-  #       uses: jlumbroso/free-disk-space@main
-  #       with:
-  #         # this might remove tools that are actually needed,
-  #         # if set to "true" but frees about 6 GB
-  #         tool-cache: false
-          
-  #         # all of these default to true, but feel free to set to
-  #         # "false" if necessary for your workflow
-  #         android: true
-  #         # letting dotnet stay on all instances since we use C#
-  #         # if for some reason we need 4GB more, re-eval this
-  #         dotnet: false
-  #         haskell: true
-  #         large-packages: true
-  #         # maybe this will fix build & push issues
-  #         docker-images: false
-  #         swap-storage: true
-
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         tags: myimage:latest
-  #         outputs: type=docker,dest=/tmp/myimage.tar
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: myimage
-  #         path: /tmp/myimage.tar
-
   cache:
     name: Compile Library Folder
     runs-on: ubuntu-22.04
@@ -78,8 +33,10 @@ jobs:
         id: unity-cache
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**', 'Unity Files/Unity Files.sln') }}
           restore-keys: |
             Library-
 
@@ -121,6 +78,7 @@ jobs:
           targetPlatform: StandaloneWindows64
           projectPath: "Unity Files"
           allowDirtyBuild: true
+          buildMethod: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
           customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
@@ -156,8 +114,10 @@ jobs:
       - name: Check cache for files
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**', 'Unity Files/Unity Files.sln') }}
           restore-keys: |
             Library-
 
@@ -206,8 +166,10 @@ jobs:
       - name: Check cache for files
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**', 'Unity Files/Unity Files.sln') }}
           restore-keys: |
             Library-
 
@@ -267,26 +229,28 @@ jobs:
       - name: Check cache for files
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**', 'Unity Files/Unity Files.sln') }}
           restore-keys: |
             Library-
 
       # unity setup & sln file
-      - name: Setup Unity & generate sln
-        continue-on-error: true
-        uses: game-ci/unity-builder@v4
-        with:
-          unityVersion: 6000.2.8f1
-          projectPath: "Unity Files"
-          buildMethod: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
-          customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
-          targetPlatform: StandaloneWindows64
-        env:
-          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL}}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-          TMPDIR: /tmp
+      # - name: Setup Unity & generate sln
+      #   continue-on-error: true
+      #   uses: game-ci/unity-builder@v4
+      #   with:
+      #     unityVersion: 6000.2.8f1
+      #     projectPath: "Unity Files"
+      #     buildMethod: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
+      #     customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
+      #     targetPlatform: StandaloneWindows64
+      #   env:
+      #     UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      #     UNITY_EMAIL: ${{ secrets.UNITY_EMAIL}}
+      #     UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+      #     TMPDIR: /tmp
 
       - name: Install dotnet-format
         run: dotnet tool install --global dotnet-format
