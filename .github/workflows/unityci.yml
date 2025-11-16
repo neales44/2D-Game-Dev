@@ -4,7 +4,7 @@
 # after caching is complete, pass on to linting & testing
 # linting takes from cache, compiles project in unity to make a .sln file to then check the C# code
 # testing takes from cache, compiles project in unity to run the unit test format that unity itself provides
-# if tests pass -> build & compile code into .exe in the build job
+# after tests -> build & compile code into .exe in the build job
 
 # if caching fails -> a memory or unity crash problem; needs re-run or manual review
 # if linting fails -> usually formatting problems; will auto fix
@@ -90,10 +90,27 @@ jobs:
           TMPDIR: /tmp
 
   test:
-    name: Run Unity Tests
+    name: Run Unity Tests & Build Game
     runs-on: ubuntu-22.04
     needs: cache
     steps:
+  
+      # checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # cache
+      - name: Check cache for files
+        uses: actions/cache@v3
+        with:
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
 
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
@@ -106,21 +123,6 @@ jobs:
           large-packages: true
           docker-images: true
           swap-storage: true
-  
-      # checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      # cache
-      - name: Check cache for files
-        uses: actions/cache@v3
-        with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
-          restore-keys: |
-            Library-
 
       # test
       - name: Run PlayMode tests
@@ -140,40 +142,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           TMPDIR: /tmp
 
-  build:
-    name: Build Unity Project
-    runs-on: ubuntu-22.04
-    needs: test
-    steps:
-
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          
-          android: true
-          dotnet: false
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
-
-      # checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      # cache
-      - name: Check cache for files
-        uses: actions/cache@v3
-        with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      # build
+        # build
       - name: Build project
         id: build
         uses: game-ci/unity-builder@v4
@@ -199,6 +168,65 @@ jobs:
           name: Build
           path: build
 
+  # build:
+  #   name: Build Unity Project
+  #   runs-on: ubuntu-22.04
+  #   needs: test
+  #   steps:
+
+  #     # checkout
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         lfs: true
+
+  #     # cache
+  #     - name: Check cache for files
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: Unity Files/Library
+  #         key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+  #         restore-keys: |
+  #           Library-
+
+  #     - name: Free Disk Space (Ubuntu)
+  #       uses: jlumbroso/free-disk-space@main
+  #       with:
+  #         tool-cache: false
+          
+  #         android: true
+  #         dotnet: false
+  #         haskell: true
+  #         large-packages: true
+  #         docker-images: true
+  #         swap-storage: true
+
+  #     # build
+  #     - name: Build project
+  #       id: build
+  #       uses: game-ci/unity-builder@v4
+  #       # continue-on-error: true
+  #       with:
+  #         unityVersion: 6000.2.8f1
+  #         targetPlatform: StandaloneWindows64
+  #         projectPath: "Unity Files"
+  #         allowDirtyBuild: true
+  #         customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
+  #       env:
+  #         UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL}}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #         BUILD_NAME: SamuRat
+  #         BUILD_PATH: build/SamuRat
+  #         BUILD_FILE: SamuRat.exe
+  #         TMPDIR: /tmp
+
+  #     # output compiled build
+  #     - uses: actions/upload-artifact@v4
+  #       with:
+  #         name: Build
+  #         path: build
+
   # linter
   lint:
     name: Lint C# Code
@@ -208,7 +236,24 @@ jobs:
       contents: write # to commit the linting changes
     steps:
 
+      # checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # cache
+      - name: Check cache for files
+        id: unity-cache
+        uses: actions/cache@v3
+        with:
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
+          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
       - name: Free Disk Space (Ubuntu)
+        if: steps.unity-cache.outputs.cache-hit != 'true'
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
@@ -220,20 +265,6 @@ jobs:
           large-packages: true
           docker-images: false
           swap-storage: true
-
-      # checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # cache
-      - name: Check cache for files
-        id: unity-cache
-        uses: actions/cache@v3
-        with:
-          path: Unity Files/Unity Files.sln
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
-          restore-keys: |
-            Library-
 
       # unity setup & sln file
       - name: Setup Unity & generate sln
