@@ -208,12 +208,12 @@ jobs:
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
-          
+
+          # docker images & dotnet false for the dotnet install & commands
           android: true
-          dotnet: true
+          dotnet: false
           haskell: true
           large-packages: true
-          # docker images false for the dotnet install & commands
           docker-images: false
           swap-storage: true
 
