@@ -28,7 +28,7 @@ jobs:
 
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -97,7 +97,7 @@ jobs:
   
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -177,7 +177,7 @@ jobs:
 
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # cache
       - name: Check cache for files
