@@ -1,3 +1,16 @@
+# generally how this works is:
+# cache checks for library files
+# if C# & scripts are different -> rebuild library files -> cache them
+# after caching is complete, pass on to linting & testing
+# linting takes from cache, compiles project in unity to make a .sln file to then check the C# code
+# testing takes from cache, compiles project in unity to run the unit test format that unity itself provides
+# after tests -> build & compile code into .exe in the build job
+
+# if caching fails -> a memory or unity crash problem; needs re-run or manual review
+# if linting fails -> usually formatting problems; will auto fix
+# if testing fails -> code needs fixing / tests need re-evaluation; manual review
+# if building fails -> compiler errors; review C# scripts for errors
+
 name: Unity CI
 
 on: [push, pull_request]
@@ -15,7 +28,7 @@ jobs:
 
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -24,7 +37,9 @@ jobs:
         id: unity-cache
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
           key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
           restore-keys: |
             Library-
@@ -36,6 +51,27 @@ jobs:
           else
             echo "No cache - rebuilding Library"
           fi
+
+      # this was taken from https://github.com/marketplace/actions/free-disk-space-ubuntu, which
+      # was found from https://game.ci/docs/troubleshooting/common-issues/#no-space-left-on-device
+      - name: Free Disk Space (Ubuntu)
+        if: steps.unity-cache.outputs.cache-hit != 'true'
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+          
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          # letting dotnet stay on all instances since we use C#
+          # if for some reason we need 4GB more, re-eval this
+          dotnet: false
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
       
       - name: Setup Unity Library folder
         if: steps.unity-cache.outputs.cache-hit != 'true'
@@ -43,25 +79,25 @@ jobs:
         uses: game-ci/unity-builder@v4
         with:
           unityVersion: 6000.2.8f1
-          targetPlatform: StandaloneWindows64
           projectPath: "Unity Files"
-          allowDirtyBuild: true
+          buildMethod: Packages.Rider.Editor.RiderScriptEditor.SyncSolution
           customImage: unityci/editor:ubuntu-6000.2.8f1-windows-mono-3
+          targetPlatform: StandaloneWindows64
         env:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           TMPDIR: /tmp
 
-  test:
-    name: Run Unity Tests
+  build:
+    name: Run Unity Tests & Build Game
     runs-on: ubuntu-22.04
     needs: cache
     steps:
   
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
 
@@ -69,17 +105,27 @@ jobs:
       - name: Check cache for files
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
           key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
           restore-keys: |
             Library-
-      # Quality
-      - name: Install .net
-        run: dotnet tool install -g dotnet-format
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          
+          android: true
+          dotnet: false
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
 
       # test
       - name: Run PlayMode tests
-        id: tests
         uses: game-ci/unity-test-runner@v4
         # commenting this out as it seems to not crash anymore?
         # continue-on-error: true
@@ -95,38 +141,8 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
           TMPDIR: /tmp
 
-      # help with memory / segfault issues
-      # - name: Clean up docker space
-      #   run: |
-      #     echo "Removing unused docker images and containers..."
-      #     docker system prune -af
-      #   env:
-      #     TMPDIR: /tmp
-
-  build:
-    name: Build Unity Project
-    runs-on: ubuntu-22.04
-    needs: test
-    steps:
-
-      # checkout
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      # cache
-      - name: Check cache for files
-        uses: actions/cache@v3
-        with:
-          path: Unity Files/Library
-          key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
-          restore-keys: |
-            Library-
-
-      # build
+        # build
       - name: Build project
-        id: build
         uses: game-ci/unity-builder@v4
         # continue-on-error: true
         with:
@@ -161,19 +177,37 @@ jobs:
 
       # checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # cache
       - name: Check cache for files
+        id: unity-cache
         uses: actions/cache@v3
         with:
-          path: Unity Files/Library
+          path: | 
+            Unity Files/Library
+            Unity Files/Unity Files.sln
           key: Library-${{ hashFiles('Unity Files/Assets/**', 'Unity Files/Packages/**', 'Unity Files/ProjectSettings/**') }}
           restore-keys: |
             Library-
 
+      - name: Free Disk Space (Ubuntu)
+        if: steps.unity-cache.outputs.cache-hit != 'true'
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+
+          # docker images & dotnet false for the dotnet install & commands
+          android: true
+          dotnet: false
+          haskell: true
+          large-packages: true
+          docker-images: false
+          swap-storage: true
+
       # unity setup & sln file
       - name: Setup Unity & generate sln
+        if: steps.unity-cache.outputs.cache-hit != 'true'
         continue-on-error: true
         uses: game-ci/unity-builder@v4
         with:
@@ -199,7 +233,7 @@ jobs:
 
       - name: Run dotnet-format linter
         run: |
-          dotnet-format "Unity Files/Unity Files.sln"
+          dotnet-format -v diag "Unity Files/Unity Files.sln"
 
       - name: Configure git for commit
         run: |
@@ -213,3 +247,4 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

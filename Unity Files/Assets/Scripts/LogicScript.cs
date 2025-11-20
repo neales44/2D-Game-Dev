@@ -5,9 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class LogicScript : MonoBehaviour
 {
+    // Game States
     public Text InstructionText;
     public Text BottomRightText;
-    public BasicPlayerController player;
+    public PlayerController player;
     public win_block w_block;
     public GameObject WinScreen;
     public GameObject PauseScreen;
@@ -41,7 +42,7 @@ public class LogicScript : MonoBehaviour
 
     }
 
-    public void restartGame()
+    public void RestartGame()
     {
         Paused = false;
         Time.timeScale = 1.0f;
