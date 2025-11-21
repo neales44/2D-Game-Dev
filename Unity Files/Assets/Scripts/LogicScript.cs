@@ -12,6 +12,7 @@ public class LogicScript : MonoBehaviour
     public win_block w_block;
     public GameObject WinScreen;
     public GameObject PauseScreen;
+    public GameObject LoseScreen;
     public bool Paused = false;
 
     public void TempMessage(string msg, float dur = 2f)
@@ -56,11 +57,19 @@ public class LogicScript : MonoBehaviour
         WinScreen.SetActive(true);
     }
 
+    public void LoseGame()
+    {
+        Paused = true;
+        Time.timeScale = 0f; // pause physics, animations
+        LoseScreen.SetActive(true);
+    }
+
     public void Resume()
     {
         Paused = false;
         Time.timeScale = 1.0f; // resume physics, animations
         PauseScreen.SetActive(false);
+        WinScreen.SetActive(false);
     }
 
 }
