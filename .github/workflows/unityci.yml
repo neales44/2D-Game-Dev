@@ -178,6 +178,9 @@ jobs:
       # checkout
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
 
       # cache
       - name: Check cache for files
