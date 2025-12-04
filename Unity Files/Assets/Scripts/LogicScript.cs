@@ -36,7 +36,8 @@ public class LogicScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape)) // Pause Game
         {
-            if (Paused == true){
+            if (Paused == true)
+            {
                 Resume();
             }
             else
