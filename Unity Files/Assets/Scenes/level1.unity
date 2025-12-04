@@ -784,7 +784,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
   maxHealth: 100
   currentHealth: 0
-  healthFill: {fileID: 0}
+  healthFill: {fileID: 1395305762}
   Logic: {fileID: 1392659143}
 --- !u!114 &92869130
 MonoBehaviour:
