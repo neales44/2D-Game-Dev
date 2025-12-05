@@ -156,7 +156,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // horizontal movement
-    private void PlayerMove(Vector2 vec, int dir)
+    public void PlayerMove(Vector2 vec, int dir)
     {
         if (maxHorizontalSpeed > rb.linearVelocityX * dir)
         {
@@ -167,7 +167,7 @@ public class PlayerController : MonoBehaviour
     }
 
     // handing all the conditions for when the player is jumping
-    private void PlayerJump(Vector2 UpDirection)
+    public void PlayerJump(Vector2 UpDirection)
     {
         // spaceLocked prevents holding the space bar causing all jumps to be used rapidly
         if (JumpState.GetJumpCount() > 0 && !JumpState.spaceLocked)
@@ -182,29 +182,6 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isJumping", true);
             JumpState.SetJumpVars();
         }
-    }
-
-    // publicly callable test function
-    public float MoveTest(string MoveType, float NumFrames)
-    {
-        float starterPlayerX = rb.position.x;
-        var RightDirection = new Vector2(10, 0);
-        if (MoveType == "Left")
-        {
-            for (int i = 0; i < NumFrames; i++) {
-                PlayerMove(RightDirection, -1);
-            }
-        }
-
-        else if (MoveType == "Right")
-        {
-            for (int i = 0; i < NumFrames; i++)
-            {
-                PlayerMove(RightDirection, 1);
-            }
-        }
-
-        return rb.position.x - starterPlayerX;
     }
 }
 
