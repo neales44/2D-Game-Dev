@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Rendering.UI;
-using static UnityEngine.LightAnchor;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 public class PlayerController : MonoBehaviour
 {
     // other classes
@@ -186,6 +182,29 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isJumping", true);
             JumpState.SetJumpVars();
         }
+    }
+
+    // publicly callable test function
+    public float MoveTest(string MoveType, float NumFrames)
+    {
+        float starterPlayerX = rb.position.x;
+        var RightDirection = new Vector2(10, 0);
+        if (MoveType == "Left")
+        {
+            for (int i = 0; i < NumFrames; i++) {
+                PlayerMove(RightDirection, -1);
+            }
+        }
+
+        else if (MoveType == "Right")
+        {
+            for (int i = 0; i < NumFrames; i++)
+            {
+                PlayerMove(RightDirection, 1);
+            }
+        }
+
+        return rb.position.x - starterPlayerX;
     }
 }
 

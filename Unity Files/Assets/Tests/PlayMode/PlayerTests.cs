@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class PlayerTests
 {
 
-
     [UnityTest]
     public IEnumerator PlayerExistAndMove()
     {
@@ -16,7 +15,7 @@ public class PlayerTests
         SceneManager.LoadScene("test-stage");
 
         float timePassed = 0f;
-        while (timePassed < 3f)
+        while (timePassed < 2f)
         {
             timePassed += Time.deltaTime;
             yield return null;
@@ -26,34 +25,16 @@ public class PlayerTests
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         Assert.IsNotNull(player, "Player object must be within the scene");
 
-        var movementIntensity = 4;
-
         Rigidbody2D rb = player.GetComponent<Rigidbody2D>();
         Assert.IsNotNull(rb, "Player is expected to have Rigidbody2D component");
 
-        var RightDirection = new Vector2(10, 0);
-        Vector2 playerPosition = player.transform.position;
+        PlayerController pc = player.GetComponent<PlayerController>();
 
-        rb.AddForce(RightDirection * movementIntensity);
-        while (timePassed < 3f)
-        {
-            timePassed += Time.deltaTime;
-            yield return null;
-        }
-        timePassed = 0f;
-        Assert.Greater(player.transform.position.x, playerPosition.x);
+        float TestOut = pc.MoveTest("Left", 10);
+        Assert.Less(0, TestOut);
 
-        playerPosition = player.transform.position;
-
-        rb.AddForce(-RightDirection * movementIntensity);
-        while (timePassed < 3f)
-        {
-            timePassed += Time.deltaTime;
-            yield return null;
-        }
-        timePassed = 0f;
-        Assert.Greater(playerPosition.x, player.transform.position.x);
-
+        TestOut = pc.MoveTest("Right", 10);
+        Assert.Greater(0, TestOut);
 
     }
 }
